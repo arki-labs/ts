@@ -1,6 +1,6 @@
 {
   "name": "@arki/ts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "TypeScript utility types — Prettify, DeepPartial, SnakeToCamel, RecordToPath, and other type helpers.",
   "license": "MIT",
   "repository": {
@@ -26,6 +26,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing.d.ts",
+      "import": "./dist/testing.js",
+      "default": "./dist/testing.js"
     },
     "./prettify": {
       "types": "./dist/prettify.d.ts",
