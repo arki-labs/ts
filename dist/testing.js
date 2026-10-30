@@ -1,3 +1,4 @@
+/** `expectImportPure`: assert that importing modules from a bare environment observes nothing. Node only. */
 import { spawnSync } from 'node:child_process';
 const SENTINEL = 'ARKI_IMPORT_PURE';
 /**

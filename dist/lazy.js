@@ -22,10 +22,6 @@ export function once(compute) {
         return result;
     };
 }
-/** Resolve a {@link Lazy}: call it if it is a thunk, return it otherwise. */
-export function resolveLazy(value) {
-    return typeof value === 'function' ? value() : value;
-}
 /**
  * Defer an object's construction to its FIRST property access, memoized.
  *
@@ -39,7 +35,9 @@ export function resolveLazy(value) {
  * deletes go to the real instance (never the proxy's dummy target, where
  * they would silently vanish); the prototype is the instance's, so
  * `instanceof` answers truthfully; `in`, spreads, and key enumeration
- * delegate too.
+ * delegate too. Reflected descriptors are configurable views because the
+ * proxy target does not own the instance's properties; writes and deletes
+ * still obey the instance's descriptors.
  *
  * Not for primitives — the returned value must be used as an object
  * (property access), never compared by identity to the built instance.
@@ -57,7 +55,10 @@ export function lazyObject(build) {
         getPrototypeOf: () => Reflect.getPrototypeOf(resolved()),
         has: (_target, property) => Reflect.has(resolved(), property),
         ownKeys: () => Reflect.ownKeys(resolved()),
-        getOwnPropertyDescriptor: (_target, property) => Object.getOwnPropertyDescriptor(resolved(), property),
+        getOwnPropertyDescriptor: (_target, property) => {
+            const descriptor = Object.getOwnPropertyDescriptor(resolved(), property);
+            return descriptor ? { ...descriptor, configurable: true } : undefined;
+        },
     });
 }
 //# sourceMappingURL=lazy.js.map

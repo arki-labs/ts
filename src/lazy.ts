@@ -24,22 +24,6 @@ export function once<T>(compute: () => T): () => T {
 }
 
 /**
- * A value or a zero-arg thunk producing it — the deferred-config shape DOT
- * adapters accept so a declaration can reference env without observing it
- * at module load: `kv(() => ({ url: env.REDIS_URL }))`. The adapter calls
- * {@link resolveLazy} at boot, which is where the observation belongs.
- *
- * Not for function-typed `T` — a thunk would be indistinguishable from the
- * value itself.
- */
-export type Lazy<T> = T | (() => T);
-
-/** Resolve a {@link Lazy}: call it if it is a thunk, return it otherwise. */
-export function resolveLazy<T>(value: Lazy<T>): T {
-  return typeof value === 'function' ? (value as () => T)() : value;
-}
-
-/**
  * Defer an object's construction to its FIRST property access, memoized.
  *
  * The import-purity primitive: a module can export a shared instance
@@ -52,7 +36,9 @@ export function resolveLazy<T>(value: Lazy<T>): T {
  * deletes go to the real instance (never the proxy's dummy target, where
  * they would silently vanish); the prototype is the instance's, so
  * `instanceof` answers truthfully; `in`, spreads, and key enumeration
- * delegate too.
+ * delegate too. Reflected descriptors are configurable views because the
+ * proxy target does not own the instance's properties; writes and deletes
+ * still obey the instance's descriptors.
  *
  * Not for primitives — the returned value must be used as an object
  * (property access), never compared by identity to the built instance.
@@ -60,17 +46,23 @@ export function resolveLazy<T>(value: Lazy<T>): T {
 export function lazyObject<T extends object>(build: () => T): T {
   const resolved = once(build);
 
-  return new Proxy({} as object, {
-    get: (_target, property) => {
-      const instance = resolved();
-      const value = Reflect.get(instance, property, instance);
-      return typeof value === 'function' ? (value as (...args: unknown[]) => unknown).bind(instance) : value;
+  return new Proxy(
+    {},
+    {
+      get: (_target, property) => {
+        const instance = resolved();
+        const value = Reflect.get(instance, property, instance);
+        return typeof value === 'function' ? (value as (...args: unknown[]) => unknown).bind(instance) : value;
+      },
+      set: (_target, property, value) => Reflect.set(resolved(), property, value),
+      deleteProperty: (_target, property) => Reflect.deleteProperty(resolved(), property),
+      getPrototypeOf: () => Reflect.getPrototypeOf(resolved()),
+      has: (_target, property) => Reflect.has(resolved(), property),
+      ownKeys: () => Reflect.ownKeys(resolved()),
+      getOwnPropertyDescriptor: (_target, property) => {
+        const descriptor = Object.getOwnPropertyDescriptor(resolved(), property);
+        return descriptor ? { ...descriptor, configurable: true } : undefined;
+      },
     },
-    set: (_target, property, value) => Reflect.set(resolved(), property, value),
-    deleteProperty: (_target, property) => Reflect.deleteProperty(resolved(), property),
-    getPrototypeOf: () => Reflect.getPrototypeOf(resolved()),
-    has: (_target, property) => Reflect.has(resolved(), property),
-    ownKeys: () => Reflect.ownKeys(resolved()),
-    getOwnPropertyDescriptor: (_target, property) => Object.getOwnPropertyDescriptor(resolved(), property),
-  }) as T;
+  ) as T;
 }

@@ -1,3 +1,4 @@
+/** `expectImportPure`: assert that importing modules from a bare environment observes nothing. Node only. */
 /** Options for {@link expectImportPure}. */
 export type ImportPurityOptions = {
     /** Subprocess runtime binary (default `'bun'`). */
