@@ -1,4 +1,4 @@
-Read-only mirror of `@arki/ts` v0.1.0. Source and issues: arki-labs/arki. Docs: https://arki.dev/packages/ts. Published 2026-10-30 with provenance https://www.npmjs.com/package/@arki/ts/v/0.1.0#provenance.
+Read-only mirror of `@arki/ts` v0.1.1. Source and issues: arki-labs/arki. Docs: https://arki.dev/packages/ts. Published 2026-11-09 with provenance https://www.npmjs.com/package/@arki/ts/v/0.1.1#provenance.
 
 # @arki/ts
 
@@ -48,13 +48,13 @@ The main entry (`@arki/ts`) and the type-only subpaths (`/prettify`, `/utils`) a
 
 <!-- runtimes:start -->
 
-| Runtime | Result  | Version tested        | Date (UTC) |
-| ------- | ------- | --------------------- | ---------- |
-| node    | pass    | v26.11.1              | 2026-10-17 |
-| bun     | pass    | 1.4.2                 | 2026-10-17 |
-| deno    | pass    | 2.9.7                 | 2026-10-17 |
-| browser | pass    | Chromium 156.0.8078.4 | 2026-10-17 |
-| hermes  | not run | -                     | 2026-10-17 |
+| Runtime | Result | Version tested        | Date (UTC) |
+| ------- | ------ | --------------------- | ---------- |
+| node    | pass   | v22.13.1              | 2026-11-05 |
+| bun     | pass   | 1.4.2                 | 2026-11-05 |
+| deno    | pass   | 2.9.8                 | 2026-11-05 |
+| browser | pass   | Chromium 156.0.8078.4 | 2026-11-05 |
+| hermes  | pass   | V1 250829098.0.17     | 2026-11-05 |
 
 <!-- runtimes:end -->
 
@@ -119,6 +119,10 @@ The runtime helpers throw only what your code throws:
 - `once(compute)`: a synchronous throw is not remembered, so the next call retries. A rejected promise that `compute` returns is remembered. Add your own retry when an async boot may fail.
 - `lazyObject(build)`: `build` runs on the first property access, so a failure appears there, not at import. The next access retries.
 - `expectImportPure` throws a plain `Error` with the subprocess output when an import reads the environment, throws or does not finish. It also throws when you pass no entry paths. The package defines no error codes.
+
+## Observability
+
+Pure computation: no I/O, so no spans or metrics.
 
 ## Limits
 
