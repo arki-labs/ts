@@ -1,4 +1,4 @@
-Read-only mirror of `@arki/ts` v0.1.1. Source and issues: arki-labs/arki. Docs: https://arki.dev/packages/ts. Published 2026-11-09 with provenance https://www.npmjs.com/package/@arki/ts/v/0.1.1#provenance.
+Read-only mirror of `@arki/ts` v0.1.3. Source and issues: arki-labs/arki. Docs: https://arki.dev/packages/ts. Published 2026-11-26 with provenance https://www.npmjs.com/package/@arki/ts/v/0.1.3#provenance.
 
 # @arki/ts
 
